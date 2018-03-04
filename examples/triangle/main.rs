@@ -68,13 +68,27 @@ pub fn main() {
     let context = glutin::ContextBuilder::new()
         .with_gl(glutin::GlRequest::Specific(api, version))
         .with_vsync(true);
-    let (window, mut device, mut factory, main_color, mut main_depth) =
+    let (
+        window,
+        mut device,
+        mut factory,
+        main_color,
+        mut main_depth
+    ) =
         gfx_window_glutin::init::<ColorFormat, DepthFormat>(window_config, context, &events_loop);
-    let mut encoder = gfx::Encoder::from(factory.create_command_buffer());
 
-    let pso = factory.create_pipeline_simple(&vs_code, &fs_code, pipe::new())
-        .unwrap();
-    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&TRIANGLE, ());
+    let mut encoder =
+        gfx::Encoder::from(factory.create_command_buffer());
+
+    let pso =
+        factory.create_pipeline_simple(&vs_code, &fs_code, pipe::new()).unwrap();
+
+    let (
+        vertex_buffer,
+        slice
+    ) =
+        factory.create_vertex_buffer_with_slice(&TRIANGLE, ());
+
     let mut data = pipe::Data {
         vbuf: vertex_buffer,
         out: main_color

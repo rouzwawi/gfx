@@ -41,15 +41,16 @@ gfx_defines!{
         color: u32 = "a_Color",
     }
 
-    constant Locals {
-        scale: f32 = "u_Scale",
-    }
+//    constant Locals {
+//        scale: f32 = "u_Scale",
+//    }
 
     pipeline pipe {
         vertex: gfx::VertexBuffer<Vertex> = (),
         instance: gfx::InstanceBuffer<Instance> = (),
         scale: gfx::Global<f32> = "u_Scale",
-        locals: gfx::ConstantBuffer<Locals> = "Locals",
+        time: gfx::Global<f32> = "u_time",
+//        locals: gfx::ConstantBuffer<Locals> = "Locals",
         out: gfx::RenderTarget<ColorFormat> = "Target0",
     }
 }
@@ -70,6 +71,8 @@ fn fill_instances(instances: &mut [Instance], instances_per_length: u32, size: f
                 translate: translate,
                 color: rng.next_u32()
             };
+            instances[i].translate[0] += rng.next_f32()/50.0-0.02;
+            instances[i].translate[1] += rng.next_f32()/50.0-0.02;
             translate[1] += size + gap;
         }
         translate[1] = begin;
@@ -134,7 +137,7 @@ impl<R: gfx::Resources> gfx_app::Application<R> for App<R> {
         let (quad_vertices, mut slice) = factory
             .create_vertex_buffer_with_slice(&QUAD_VERTICES, &QUAD_INDICES[..]);
         slice.instances = Some((instance_count, 0));
-        let locals = Locals { scale: size };
+//        let locals = Locals { scale: size };
 
         App {
             pso: factory.create_pipeline_simple(
@@ -146,9 +149,10 @@ impl<R: gfx::Resources> gfx_app::Application<R> for App<R> {
                 vertex: quad_vertices,
                 instance: instances,
                 scale: size,
-                locals: factory
-                    .create_buffer_immutable(&[locals], gfx::buffer::Role::Constant, gfx::memory::Bind::empty())
-                    .unwrap(),
+                time: 0.0f32,
+//                locals: factory
+//                    .create_buffer_immutable(&[locals], gfx::buffer::Role::Constant, gfx::memory::Bind::empty())
+//                    .unwrap(),
                 out: window_targets.color,
             },
             slice: slice,
@@ -163,6 +167,7 @@ impl<R: gfx::Resources> gfx_app::Application<R> for App<R> {
                                 0, 0, self.upload.len()).unwrap();
             self.uploading = false;
         }
+        self.data.time += 0.05;
 
         encoder.clear(&self.data.out, [0.1, 0.2, 0.3, 1.0]);
         encoder.draw(&self.slice, &self.pso, &self.data);
