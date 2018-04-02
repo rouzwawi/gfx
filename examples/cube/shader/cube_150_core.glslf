@@ -102,7 +102,9 @@ vec3 map(vec3 p) {
 }
 
 void main() {
-    vec4 tex = texture(t_Color, v_TexCoord);
+    //vec4 tex = texture(t_Color, v_TexCoord);
+    vec4 tex = vec4(1.0);
+
 //    tex = vec4(1.0);
 //    float blend = dot(v_TexCoord-vec2(0.5,0.5), v_TexCoord-vec2(0.5,0.5));
 //    tex = mix(vec4(0.0,0.0,0.0,0.0), tex, .5 + blend);
